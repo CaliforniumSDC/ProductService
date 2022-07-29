@@ -1,0 +1,17 @@
+//load csv file into mogoDB
+
+workgin sed command to append double to line if missing
+sed '/[\"]$/ ! s/$/\"/' imput.csv > output.csv
+mongoimport --db=sdc --collection=photos --type=csv --headerline  --file=fixedPhotos.csv
+
+mongoimport --db=sdc --collection=features --type=csv --headerline  --file=features.csv
+
+mongoimport --db=sdc --collection=related --type=csv --headerline  --file=related.csv
+
+mongoimport --db=sdc --collection=styles --type=csv --headerline  --file=stles.csv
+
+mongoimport --db=sdc --collection=products --type=csv --headerline  --file=product.csv
+
+mongoimport --db=sdc --collection=skus --type=csv --headerline  --file=skus.csv
+
+//run above terminal command when you directory is in the same file that product locates
