@@ -1,7 +1,8 @@
 //load csv file into mogoDB
 
-workgin sed command to append double to line if missing
+
 sed '/[\"]$/ ! s/$/\"/' imput.csv > output.csv
+run above sed command to append double quotation to the end of line if missing
 mongoimport --db=sdc --collection=photos --type=csv --headerline  --file=fixedPhotos.csv
 
 mongoimport --db=sdc --collection=features --type=csv --headerline  --file=features.csv
