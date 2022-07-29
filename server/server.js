@@ -9,38 +9,42 @@ let db;
 MongoClient.connect('mongodb://localhost:27017/', { useNewUrlParser: true }, (err, database) => {
   if (err) throw err;
 
-  db = database.db('sdc');
+  db = database.db('betterSDC');
 
   // Start the application after the database connection is ready
   app.listen(3000);
   console.log(`Listening on port http://localhost:${port}`);
 });
 
+function getProducts(productDetail, page, count) {
+  let reqestAmount = page * count;
+  // prevent user request to many data
+  reqestAmount = reqestAmount <= 200 ? reqestAmount : 20;
+  return productDetail.find().limit(reqestAmount).toArray();
+}
+
+function transformProducts(products) {
+  const result = [];
+  products.forEach((product) => {
+    result.push({
+      id: product.id,
+      name: product.name,
+      slogan: product.slogan,
+      description: product.description,
+      category: product.category,
+      default_price: product.default_price,
+    });
+  });
+  return result;
+}
 // Reuse database object in request handlers
 app.get('/products', (req, res) => {
   const page = req.query.page || 1;
   const count = req.query.count || 5;
-  let reqestAmount = page * count;
-  // prevent user request to many data
-  reqestAmount = reqestAmount <= 200 ? reqestAmount : 20;
-  const result = [];
   const productDetail = db.collection('product_detail');
-  productDetail
-    .find()
-    .limit(reqestAmount)
-    .toArray()
+  getProducts(productDetail, page, count)
     .then((products) => {
-      products.forEach((product) => {
-        result.push({
-          id: product.id,
-          name: product.name,
-          slogan: product.slogan,
-          description: product.description,
-          category: product.category,
-          default_price: product.default_price,
-        });
-      });
-      res.send(result);
+      res.send(transformProducts(products));
     })
     .catch((error) => {
       res.sendStatus(500);
@@ -83,9 +87,8 @@ app.get('/products/:product_id/related', (req, res) => {
 });
 
 app.get('/products/:product_id/styles', (req, res) => {
-  const stylesOutput = [];
   const pId = parseInt(req.params.product_id, 10);
-  const productDetail = db.collection('styles_detail');
+  const productDetail = db.collection('style_detail');
   productDetail
     .find({ productId: pId })
     .toArray()
