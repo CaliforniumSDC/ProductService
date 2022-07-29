@@ -1,19 +1,29 @@
 const express = require('express');
+const { MongoClient } = require('mongodb');
+
 const app = express();
 const port = 3000;
+let db;
 
-app.get('/', (req, res)=>{
-  res.send('Hello World, you luck');
-})
+// Initialize connection once
+MongoClient.connect('mongodb://localhost:27017/', { useNewUrlParser: true }, (err, database) => {
+  if (err) throw err;
 
-app.get('/products', (req, res)=>{
-  let page = req.params.page || 1;
-  let count = req.params.count || 5;
+  db = database.db('sdc');
 
-  res.send('Hello World, you luck');
-})
+  // Start the application after the database connection is ready
+  app.listen(3000);
+  console.log(`Listening on port http://localhost:${port}`);
+});
 
-app.listen(port, ()=>{
-  console.log(`Product API listening on port http://localhost:${port}`)
-})
-
+// Reuse database object in request handlers
+app.get('/', (req, res) => {
+  console.log('this is db ', db);
+  const productDetail = db.collection('product_detail');
+  productDetail.findOne({ id: 6 }).then((data) => {
+    console.log(data);
+    res.send(data);
+  }).catch((error) => {
+    throw error;
+  });
+});
