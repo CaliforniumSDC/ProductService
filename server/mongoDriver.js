@@ -1,31 +1,50 @@
-const express = require('express');
 const { MongoClient } = require('mongodb');
 
-const app = express();
-const port = 3000;
 let db;
+let productDetailColl;
+let relatedProductColl;
+let productDetail;
+// ================== MongoDB Connect ==================//
+// Initialize connection once
+MongoClient.connect('mongodb://localhost:27017/', { useNewUrlParser: true }, (err, database) => {
+  if (err) throw err;
+
+  db = database.db('betterSDC');
+  productDetailColl = db.collection('product_detail');
+  relatedProductColl = db.collection('related');
+  productDetail = db.collection('style_detail');
+});
 
 // ================== Server Functions ==================//
 
 // ------------------ getData ------------------ //
-function findProducts(productDetail, page, count) {
+function findProducts(page, count) {
   let reqestAmount = page * count;
   // prevent user request to many data
   reqestAmount = reqestAmount <= 200 ? reqestAmount : 20;
-  return productDetail
+  return productDetailColl
     .find({}, { projection: { features: 0, _id: 0 } })
     .limit(reqestAmount)
     .toArray();
 }
 
-function findRelatedProducts(relatedProduct, productId) {
-  return relatedProduct
+function findRelatedProducts(productId) {
+  return relatedProductColl
     .find(
       { current_product_id: productId },
       { projection: { _id: 0 } },
     )
     .limit(48)
     .toArray();
+}
+
+function findOneProductDetail(productId) {
+  return productDetailColl
+    .findOne({ id: productId }, { projection: { _id: 0 } });
+}
+
+function findOneProductStyles(productId) {
+  return productDetail.find({ productId }).toArray();
 }
 
 // ------------------ transformData ------------------ //
@@ -62,14 +81,11 @@ function transformStyles(styles) {
   return finalStyle;
 }
 
-// ================== Server Router & MongoDB Connect ==================//
-// Initialize connection once
-MongoClient.connect('mongodb://localhost:27017/', { useNewUrlParser: true }, (err, database) => {
-  if (err) throw err;
-
-  db = database.db('betterSDC');
-
-  // Start the application after the database connection is ready
-  app.listen(3000);
-  console.log(`Listening on port http://localhost:${port}`);
-});
+module.exports = {
+  findProducts,
+  findRelatedProducts,
+  findOneProductDetail,
+  findOneProductStyles,
+  transformRelatedProducts,
+  transformStyles,
+};
