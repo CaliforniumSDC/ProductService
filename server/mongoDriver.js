@@ -16,35 +16,38 @@ MongoClient.connect('mongodb://localhost:27017/', { useNewUrlParser: true }, (er
 });
 
 // ================== Server Functions ==================//
-
 // ------------------ getData ------------------ //
 function findProducts(page, count) {
   let reqestAmount = page * count;
+  const query = {};
+  const queryOption = { projection: { features: 0, _id: 0 } };
   // prevent user request to many data
   reqestAmount = reqestAmount <= 200 ? reqestAmount : 20;
   return productDetailColl
-    .find({}, { projection: { features: 0, _id: 0 } })
+    .find(query, queryOption)
     .limit(reqestAmount)
     .toArray();
 }
 
 function findRelatedProducts(productId) {
+  const query = { current_product_id: productId };
+  const queryOption = { projection: { _id: 0 } };
   return relatedProductColl
-    .find(
-      { current_product_id: productId },
-      { projection: { _id: 0 } },
-    )
+    .find(query, queryOption)
     .limit(48)
     .toArray();
 }
 
 function findOneProductDetail(productId) {
+  const query = { id: productId };
+  const queryOption = { projection: { _id: 0 } };
   return productDetailColl
-    .findOne({ id: productId }, { projection: { _id: 0 } });
+    .findOne(query, queryOption);
 }
 
 function findOneProductStyles(productId) {
-  return productDetail.find({ productId }).toArray();
+  const query = { productId };
+  return productDetail.find(query).toArray();
 }
 
 // ------------------ transformData ------------------ //
