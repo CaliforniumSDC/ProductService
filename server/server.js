@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./mongoDriver');
 
-const loaderioToken = 'loaderio-ea8731dd65d23a6e201c0e62afca126b';
+const loaderioToken = 'loaderio-77ab6695c41ac955d40a87424e00cb65';
 
 const app = express();
 
