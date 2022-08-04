@@ -6,7 +6,7 @@ let relatedProductColl;
 let productDetail;
 // ================== MongoDB Connect ==================//
 // Initialize connection once
-MongoClient.connect('mongodb://localhost:27017/', { useNewUrlParser: true }, (err, database) => {
+MongoClient.connect('mongodb://localhost:8080/', { useNewUrlParser: true }, (err, database) => {
   if (err) throw err;
 
   db = database.db('betterSDC');
