@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./mongoDriver');
 
+const loaderioToken = 'loaderio-ea8731dd65d23a6e201c0e62afca126b';
+
 const app = express();
 
 app.use(cors());
@@ -11,6 +13,10 @@ const port = 3000;
 // app.use('*', (req, res) => {
 //   console.log('client connect to user');
 // });
+
+app.get(`/${loaderioToken}`, (req, res) => {
+  res.send(loaderioToken);
+});
 
 app.get('/products', (req, res) => {
   // console.log('find products request received');
